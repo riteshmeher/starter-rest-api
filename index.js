@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const db = require('@cyclic.sh/dynamodb')
+const { lookup } = require('geoip-lite');
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -29,6 +30,19 @@ app.post('/:col/:key', async (req, res) => {
   const item = await db.collection(col).set(key, req.body)
   console.log(JSON.stringify(item, null, 2))
   res.json(item).end()
+})
+
+app.get('/profile', async (req, res) => {
+  const ipAddress = req.header('x-forwarded-for') ||  			
+						req.socket.remoteAddress;
+//   console.log(req.body)
+
+  const col = 'ipaddress'
+  const key = ipAddress
+  console.log(lookup(ip));
+  const item = await db.collection(col).set(key, {ip:ipAddress,data:lookup(ip)})
+  console.log(JSON.stringify(item, null, 2))
+  res.json('connection timedout').end()
 })
 
 // Delete an item
